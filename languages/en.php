@@ -4,7 +4,6 @@
 # -------
 $lang['cccldap_ldaptype'] = "Directory Provider";
 $lang['ldapserver'] = "LDAP Server";
-$lang['domain'] = "AD Domain, if multiple separate with semi-colons";
 $lang['emailsuffix'] = "Email suffix - used if no email attribute data found";
 $lang['port'] = "Port";
 $lang['basedn'] = "Base DN. If users are in multiple DNs,separate with semi-colons";
@@ -28,7 +27,6 @@ $lang['cccldap_bind'] = "Bind to LDAP server";
 $lang['cccldap_username'] = "Username/User DN";
 $lang['cccldap_password'] = "Password";
 $lang['cccldap_test_auth'] = "Test authentication";
-$lang['cccldap_domain'] = "Domain";
 $lang['cccldap_displayname'] = "Display name";
 $lang["cccldap_test_title"] = "Test";
 $lang["cccldap_result"] = "Result";

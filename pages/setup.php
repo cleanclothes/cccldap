@@ -16,7 +16,6 @@ if (getval('upload','')!='')
 elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag","")!="")
 	{
 
-	$cccldap['domain'] = getvalescaped('domain','');
 	$cccldap['emailsuffix'] = getvalescaped('emailsuffix','');
 	$cccldap['ldapserver'] = getvalescaped('ldapserver','');
 	$cccldap['port'] = getvalescaped('port','');
@@ -55,7 +54,7 @@ include "../../../include/header.php";
 
 // if some of the values aren't set yet, fudge them so we don't get an undefined error
 // this may be important for updates to the plugin that introduce new variables
-foreach (array('ldapserver','domain','port','basedn','loginfield','usersuffix','emailsuffix','email_attribute','create_new_match_email','allow_duplicate_email','notification_email','ldaptype') as $thefield){
+foreach (array('ldapserver','port','basedn','loginfield','usersuffix','emailsuffix','email_attribute','create_new_match_email','allow_duplicate_email','notification_email','ldaptype') as $thefield){
 	if (!isset($cccldap[$thefield])){
 		$cccldap[$thefield] = '';
 	}
@@ -85,25 +84,7 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 			<label for="ldappassword"><?php echo $lang["cccldap_password"] ?></label><input id='ldappassword' type="password" name='ldappassword'>
 			</div>		
 
-			<?php
-			if(!isset($cccldap['ldaptype']) || $cccldap['ldaptype']==1) 
-				{?>
-				<div class="Question">
-				<label for="ldapdomain"><?php echo $lang["cccldap_domain"] ?></label>
-					<select id='ldapdomain' name='ldapdomain'>
-					<?php
-					$binddomains=explode(";",$cccldap['domain']);
-					foreach ($binddomains as $binddomain)
-						{
-						echo "<option value'" . htmlspecialchars($binddomain)  . "'>" . htmlspecialchars($binddomain) . "</option>";
-						}				
-					?>
-					</select>
-				</div>	
-				<?php
-				}
-			}
-			?>
+
 		
 		<input type="submit" onClick="cccldap_test();return false;" name="testauth" value="<?php echo $lang["cccldap_test_auth"]; ?>" <?php if (!$dstestconn){echo "disabled='true'";} ?>>		
 		<input type="submit" onClick="ModalClose();return false;" name="cancel" value="<?php echo $lang["cancel"]; ?>">
@@ -119,19 +100,17 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 			testurl= '<?php echo get_plugin_path("cccldap",true) . "/pages/ajax_test_auth.php";?>',
 			user = jQuery('#ldapuser').val();
 			password = jQuery('#ldappassword').val();
-			userdomain = jQuery('#ldapdomain').val();
 			var post_data = {
 				ajax: true,
 				ldapserver: '<?php echo htmlspecialchars($cccldap['ldapserver']) ?>',
 				port: '<?php echo htmlspecialchars($cccldap['port']) ?>',
 				ldaptype: '<?php echo htmlspecialchars($cccldap['ldaptype']) ?>',
-				domain: '<?php echo htmlspecialchars($cccldap['domain']) ?>',
 				loginfield: '<?php echo htmlspecialchars($cccldap['loginfield']) ?>',				
 				basedn: '<?php echo htmlspecialchars($cccldap['basedn']) ?>',	
 				email_attribute: '<?php echo htmlspecialchars($cccldap['email_attribute']) ?>',
 				ldapuser: user,
-				ldappassword: password,
-				userdomain: userdomain				
+				ldappassword: password
+			
 				
 			};
 			
@@ -209,7 +188,6 @@ if (!function_exists('ldap_connect'))
 
 <?php echo config_single_select("ldaptype", $lang['cccldap_ldaptype'], $cccldap['ldaptype'], array(1=>"Active Directory",2=>"Oracle Directory")); ?>
 <?php echo config_text_field("ldapserver",$lang['ldapserver'],$cccldap['ldapserver'],60);?>
-<?php echo config_text_field("domain",$lang['domain'],$cccldap['domain'],60);?>
 <?php echo config_text_field("emailsuffix",$lang['emailsuffix'],$cccldap['emailsuffix'],60);?>
 <?php echo config_text_field("email_attribute",$lang['email_attribute'],$cccldap['email_attribute'],60);?>
 <?php echo config_text_field("port",$lang['port'],$cccldap['port'],5);?>

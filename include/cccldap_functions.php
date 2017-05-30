@@ -39,22 +39,7 @@ function cccldap_authenticate($username,$password){
 		return false;
 		}
 	
-	if(!isset($cccldap['ldaptype']) || $cccldap['ldaptype']==1)  // AD - need to set this
-		{
-		$binddomains=explode(";",$cccldap['domain']);
-		foreach ($binddomains as $binddomain)
-			{
-			debug("LDAP - Attempting to bind to LDAP server as : " . $username . "@" .  $binddomain);
-			$login = @ldap_bind( $ds, "$username@" . $binddomain, $password );
-			if (!$login){continue;}else{$userdomain=$binddomain;break;}
-			}
-		if (!$login){debug("LDAP - failed to bind to LDAP server");	return false; }
-		}
-	else
-		{
-		$userdomain=$cccldap['domain'];
-		}
-		
+	
 	$email_attribute=$cccldap['email_attribute'];
 	$attributes = array("displayname",$email_attribute);
 	$loginfield=$cccldap['loginfield'];
@@ -72,14 +57,9 @@ function cccldap_authenticate($username,$password){
 		{
 		$ldapconnections[$x] = ldap_connect( $cccldap['ldapserver'],$cccldap['port'] );
 		
-		if(!isset($cccldap['ldaptype']) || $cccldap['ldaptype']==1) 
-			{
-			$binduserstring = $username . "@" . $userdomain;
-			}
-		else
-			{
+
 			$binduserstring = $cccldap['loginfield'] . "=" . $username . "," . $cccldap['basedn'];
-			}
+
 		debug("LDAP - binding as " . $binduserstring);
 		if(!(@ldap_bind($ldapconnections[$x], $binduserstring, $password ))){return false;}
 		
@@ -140,7 +120,7 @@ function cccldap_authenticate($username,$password){
 
 				
 		
-		$return['domain'] = $userdomain;
+
 		$return['username'] = $username;
 		$return['binduser'] = $binduserstring;
 		$return['displayname'] = $displayname;
