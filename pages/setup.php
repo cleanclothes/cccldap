@@ -228,9 +228,4 @@ if (!function_exists('ldap_connect'))
 
 </form>
 </div>	
-
-
-
-
-
 <?php include "../../../include/footer.php";
