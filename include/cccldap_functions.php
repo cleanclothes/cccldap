@@ -18,7 +18,7 @@
 function cccldap_authenticate($username,$password){
 	if (!function_exists('ldap_connect')){return false;}
 	// given a username and password, return false if not authenticated, or 
-	// associative array of displayname, username, e-mail, group if valid
+	// associative array of displayname, username, e-mail if valid
 	global $cccldap;
 	debug("LDAP - Connecting to LDAP server: " . $cccldap['ldapserver'] . " on port " . $cccldap['port']);
 	$ds = ldap_connect( $cccldap['ldapserver'],$cccldap['port'] );
@@ -125,7 +125,6 @@ function cccldap_authenticate($username,$password){
 		//$entry = ldap_first_entry($ds, $search);
 		//var_dump($entries);		
 
-		$usermemberof=array();
 
 
 		//Extract email info
@@ -146,7 +145,6 @@ function cccldap_authenticate($username,$password){
 		$return['binduser'] = $binduserstring;
 		$return['displayname'] = $displayname;
 		$return['email'] = $email;
-		$return['memberof'] = $usermemberof;
 		return $return;
 
 	}

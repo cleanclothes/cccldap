@@ -155,10 +155,7 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 						returnmessage = response.message;
 						if(response.success) {						
 							returnmessage += "<tr class='resultrow'><td><?php echo $lang["email"]; ?>: </td><td>" + response.email + "</td></tr>";
-							returnmessage += "<tr class='resultrow'><td><?php echo $lang["cccldap_memberof"]; ?>";
-							for (var i = 0, len = response.memberof.length; i < len; i++) {
-							  returnmessage += "</td><td>" + response.memberof[i]  + "</td></tr><tr class='resultrow'><td>";
-							}		
+	
 							returnmessage += "</td></tr>";
 						}
 						jQuery('#blankrow').before(returnmessage);

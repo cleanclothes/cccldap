@@ -46,7 +46,6 @@ else
 	}			
 	
 $response['bindsuccess']=$bindsuccess?$lang["status-ok"]:$lang["status-fail"];	
-$response['memberof'] = array();
 
 $userdetails=cccldap_authenticate($cccldap['ldapuser'],$cccldap['ldappassword']);
 
@@ -59,7 +58,7 @@ if($userdetails)
 	$response['username'] = $userdetails['username'];
 	$response['displayname'] = $userdetails['displayname'];
 	$response['email'] = $userdetails['email'];
-	$response['memberof'] = $userdetails['memberof'];
+
 	}
 else
 	{

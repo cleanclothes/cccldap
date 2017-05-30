@@ -30,7 +30,6 @@ $lang['cccldap_password'] = "Password";
 $lang['cccldap_test_auth'] = "Test authentication";
 $lang['cccldap_domain'] = "Domain";
 $lang['cccldap_displayname'] = "Display name";
-$lang['cccldap_memberof'] = "Member of";
 $lang["cccldap_test_title"] = "Test";
 $lang["cccldap_result"] = "Result";
 $lang["cccldap_retrieve_user"] = "Retrieve user details";
