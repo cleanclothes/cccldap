@@ -13,7 +13,6 @@ $cccldap['port'] = getvalescaped('port','');
 $cccldap['ldaptype'] = getvalescaped('ldaptype',1);
 $cccldap['basedn']= getvalescaped('basedn','');
 $cccldap['loginfield'] = getvalescaped('loginfield','');
-$cccldap['ldapgroupfield'] = getvalescaped('ldapgroupfield','');
 $cccldap['email_attribute'] = getvalescaped('email_attribute','');
 
 // Test we can connect to domain
@@ -59,7 +58,6 @@ if($userdetails)
 	$response['binduser'] = $userdetails['binduser'];
 	$response['username'] = $userdetails['username'];
 	$response['displayname'] = $userdetails['displayname'];
-	$response['group'] = $userdetails['group'];
 	$response['email'] = $userdetails['email'];
 	$response['memberof'] = $userdetails['memberof'];
 	}

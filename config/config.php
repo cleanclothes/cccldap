@@ -9,7 +9,6 @@ $cccldap['loginfield'] = 'uid';
 $cccldap['usersuffix'] = '.LDAP';
 $cccldap['createusers'] = true;
 $cccldap['email_attribute'] = "userprincipalname";
-$cccldap['update_group'] = true;
 $cccldap['create_new_match_email'] = false;
 $cccldap['allow_duplicate_email'] = true;
 $cccldap['notification_email'] = "";

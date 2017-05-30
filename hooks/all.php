@@ -35,31 +35,12 @@ function HookcccldapAllExternalauth($uname, $pword){
 
 		debug ("LDAP - got user details email: " . $email);
 
-		// figure out group
-		$group = $cccldap['fallbackusergroup'];
-		$groupmatch="";
-		$grouplist = sql_query("select * from cccldap_groupmap");
-		if (count($grouplist)>0 && $userinfo['group']!="")
-			{
-			for ($i = 0; $i < count($grouplist); $i++)
-				{
-				if (($userinfo['group'] == $grouplist[$i]['ldapgroup']) && is_numeric($grouplist[$i]['rsgroup']))
-					{
-					$group = $grouplist[$i]['rsgroup'];
-					$groupmatch=$userinfo['group'];
-					}
-				}
-			}
+
 					
 
 		if ($userid > 0){
 			// user exists, so update info
-			if($cccldap['update_group'])
-				{
-				sql_query("update user set origin='cccldap', password = '$password_hash', usergroup = '$group', fullname='$displayname', email='$email' where ref = '$userid'");
-				
-				}
-			else
+			
 				{
 				sql_query("update user set origin='cccldap', password = '$password_hash', fullname='$displayname', email='$email' where ref = '$userid'");
 				}
@@ -76,11 +57,6 @@ function HookcccldapAllExternalauth($uname, $pword){
 						{
 						// We want adopt this matching account - update the username and details to match the new login credentials
 						debug("LDAP - user authenticated with matching email for existing user . " . $email . ", updating user account " . $email_matches[0]["username"] . " to new username " . $username);
-						if($cccldap['update_group'])
-							{
-							sql_query("update user set origin='cccldap',username='$username', password='$password_hash', fullname='$displayname',email='$email',usergroup='$group',comments=concat(comments,'\n" . date("Y-m-d") . " " . $lang["cccldap_usermatchcomment"] . "') where ref='" . $email_matches[0]["ref"] . "'");
-							}
-						else
 							{
 							sql_query("update user set origin='cccldap',username='$username', password='$password_hash', fullname='$displayname',email='$email',comments=concat(comments,'\n" . date("Y-m-d") . " Updated to LDAP user by cccldap.') where ref='" . $email_matches[0]["ref"] . "'");
 							}
@@ -117,31 +93,10 @@ function HookcccldapAllExternalauth($uname, $pword){
 				$ref=new_user($username);
 				if (!$ref) { echo "returning false!"; exit; return false;} // this shouldn't ever happen
 				
-				if($groupmatch=="" && isset($cccldap['notification_email']) && $cccldap['notification_email']!="")
-					{
-					global $lang, $baseurl, $email_from;
-					// send email advising that a new user has been created but that there is no mapping for the groups
-					debug("LDAP - new user but no mapping configured");
-					$emailtext=$lang['cccldap_no_group_match'] . "<br /><br />";
-					$emailtext.= "<a href=\"" . $baseurl . "/?u=" . $ref .  "\" target=\"_blank\">" . $displayname . " (" . $email . ")</a><br /><br />";
-					$emailtext.= $lang['cccldap_usermemberof'] . "<br /><br />";
-					if(is_array($userinfo["memberof"]))
-						{
-						$emailtext.="<ul>";
-						foreach($userinfo["memberof"] as $memberofgroup)
-							{
-							$emailtext.= "<li>" . $memberofgroup . "</li>";
-							}	
-						$emailtext.="</ul>";
-						}
-					send_mail($cccldap['notification_email'],$lang['cccldap_no_group_match_subject'],$emailtext,$email_from);
-					}
+
 				
 				
-				// Update with information from LDAP	
-				$rsgroupname=sql_value("select name value from usergroup where ref='$group'",'');
-				sql_query("update user set origin='cccldap', password='$password_hash', fullname='$displayname',email='$email',usergroup='$group',comments='" . $lang["cccldap_usercomment"] . (($groupmatch!="")?"\r\nLDAP group: " . escape_check($groupmatch):"") . "\r\nAdded to RS group " . escape_check($rsgroupname) . "(" . $group . ")' where ref='$ref'");
-						
+				
 				
 				return true;
 			} else {

@@ -16,7 +16,6 @@ if (getval('upload','')!='')
 elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag","")!="")
 	{
 
-	$cccldap['fallbackusergroup'] = getvalescaped('fallbackusergroup','');
 	$cccldap['domain'] = getvalescaped('domain','');
 	$cccldap['emailsuffix'] = getvalescaped('emailsuffix','');
 	$cccldap['ldapserver'] = getvalescaped('ldapserver','');
@@ -25,9 +24,7 @@ elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag
 	$cccldap['loginfield'] = getvalescaped('loginfield','');
 	$cccldap['usersuffix'] = getvalescaped('usersuffix','');
 	$cccldap['createusers'] = getvalescaped('createusers','');
-	$cccldap['ldapgroupfield'] = getvalescaped('ldapgroupfield','');
 	$cccldap['email_attribute'] = getvalescaped('email_attribute','');
-	$cccldap['update_group'] = getvalescaped('update_group','');
 	$cccldap['create_new_match_email'] = getvalescaped('create_new_match_email','');
 	$cccldap['allow_duplicate_email'] = getvalescaped('allow_duplicate_email','');
 	$cccldap['notification_email'] = getvalescaped('notification_email','');
@@ -35,23 +32,8 @@ elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag
 	
 	
 	
-	$ldapgroups = $_REQUEST['ldapgroup'];
-	$rsgroups = $_REQUEST['rsgroup'];
 	$priority = $_REQUEST['priority'];
 
-	if (count($ldapgroups) > 0)
-		{
-		sql_query('delete from cccldap_groupmap where rsgroup is not null');
-		}
-
-	for ($i=0; $i < count($ldapgroups); $i++)
-		{
-		if ($ldapgroups[$i] <> '' && $rsgroups[$i] <> '' && is_numeric($rsgroups[$i]))
-			{
-			$query = "replace into cccldap_groupmap (ldapgroup,rsgroup,priority) values ('" . escape_check($ldapgroups[$i]) . "','" . $rsgroups[$i] . "' ," . (($priority[$i]!="")?"'" . $priority[$i] . "'":"NULL") .")";
-			sql_query($query);		
-			}
-		} 
 
 
 	//$config['cccldap'] = $cccldap;
@@ -68,14 +50,13 @@ elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag
 
 
 
-// retrieve list if groups for use in mapping dropdown
-$rsgroups = sql_query('select ref, name from usergroup order by name asc');
+
 
 include "../../../include/header.php";
 
 // if some of the values aren't set yet, fudge them so we don't get an undefined error
 // this may be important for updates to the plugin that introduce new variables
-foreach (array('ldapserver','domain','port','basedn','loginfield','usersuffix','emailsuffix','fallbackusergroup','email_attribute','update_group','create_new_match_email','allow_duplicate_email','notification_email','ldaptype') as $thefield){
+foreach (array('ldapserver','domain','port','basedn','loginfield','usersuffix','emailsuffix','email_attribute','create_new_match_email','allow_duplicate_email','notification_email','ldaptype') as $thefield){
 	if (!isset($cccldap[$thefield])){
 		$cccldap[$thefield] = '';
 	}
@@ -148,7 +129,6 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 				domain: '<?php echo htmlspecialchars($cccldap['domain']) ?>',
 				loginfield: '<?php echo htmlspecialchars($cccldap['loginfield']) ?>',				
 				basedn: '<?php echo htmlspecialchars($cccldap['basedn']) ?>',	
-				ldapgroupfield: '<?php echo htmlspecialchars($cccldap['ldapgroupfield']) ?>',
 				email_attribute: '<?php echo htmlspecialchars($cccldap['email_attribute']) ?>',
 				ldapuser: user,
 				ldappassword: password,
@@ -240,76 +220,17 @@ if (!function_exists('ldap_connect'))
 <?php echo config_text_field("basedn",$lang['basedn'],$cccldap['basedn'],60);?>
 <?php echo config_text_field("loginfield",$lang['loginfield'],$cccldap['loginfield'],30);?>
 <?php echo config_text_field("usersuffix",$lang['usersuffix'],$cccldap['usersuffix'],30);?>
-<?php echo config_text_field("ldapgroupfield",$lang['groupfield'],$cccldap['ldapgroupfield'],30);?>
 <?php echo config_boolean_field("createusers",$lang['createusers'],$cccldap['createusers'],30);?>
 <?php echo config_boolean_field("create_new_match_email",$lang['cccldap_create_new_match_email'],$cccldap['create_new_match_email'],30);?>
 <?php echo config_boolean_field("allow_duplicate_email",$lang['cccldap_allow_duplicate_email'],$cccldap['allow_duplicate_email'],30);?>
-<?php echo config_boolean_field("update_group",$lang['cccldap_update_group'],$cccldap['update_group'],30);?>
 <?php echo config_text_field("notification_email",$lang['cccldap_notification_email'],$cccldap['notification_email'],60);?>
 
-<div class="Question">
-	<label for="fallbackusergroup"><?php echo $lang['fallbackusergroup']; ?></label>
-	<select name='fallbackusergroup'><option value=''></option>
-	<?php 	
-		foreach ($rsgroups as $rsgroup){
-			echo  "<option value='" . $rsgroup['ref'] . "'";
-			if ($cccldap['fallbackusergroup'] == $rsgroup['ref']){
-				echo " selected";
-			}
-			echo ">". $rsgroup['name'] . "</option>\n";
-		} 
- 	?></select>
-</div>
+
 <div class="clearerleft"></div>
 
 
 
-<div class="Question">
-<h3><?php echo $lang['ldaprsgroupmapping']; ?></h3>
-<table id='groupmaptable'>
-<tr><th>
-<strong><?php echo $lang['ldapvalue']; ?></strong>
-</th><th>
-<strong><?php echo $lang['rsgroup']; ?></strong>
-</th><th>
-<strong><?php echo $lang['cccldappriority']; ?></strong>
-</th>
-</tr>
 
-<?php
-	$grouplist = sql_query('select ldapgroup,rsgroup, priority from cccldap_groupmap order by priority desc');
-	for($i = 0; $i < count($grouplist)+1; $i++){
-		if ($i >= count($grouplist)){
-			$thegroup = array();
-			$thegroup['ldapgroup'] = '';
-			$thegroup['rsgroup'] = '';
-			$thegroup['priority'] = '';
-			$rowid = 'groupmapmodel';
-		} else {
-			$thegroup = $grouplist[$i];
-			$rowid = "row$i";
-		}
-?>
-<tr id='<?php echo $rowid; ?>'>
-   <td><input type='text' name='ldapgroup[]' value='<?php echo $thegroup['ldapgroup']; ?>' /></td>
-   <td><select name='rsgroup[]'><option value=''></option>
-	<?php 	
-		foreach ($rsgroups as $rsgroup){
-			echo  "<option value='" . $rsgroup['ref'] . "'";
-			if ($thegroup['rsgroup'] == $rsgroup['ref']){
-				echo " selected";
-			}
-			echo ">". $rsgroup['name'] . "</option>\n";
-		} 
- 	?></select>
-    </td>
-    <td><input type='text' name='priority[]' value='<?php echo $thegroup['priority']; ?>' /></td>
-</tr>
-<?php } ?>
-</table>
-
-<a onclick='addGroupMapRow()'><?php echo $lang['addrow']; ?></a>
-</div>
 
 
 <div class="Question">
@@ -334,17 +255,7 @@ if (!function_exists('ldap_connect'))
 </form>
 </div>	
 
-<script language="javascript">
-        function addGroupMapRow() {
- 
-            var table = document.getElementById("groupmaptable");
- 
-            var rowCount = table.rows.length;
-            var row = table.insertRow(rowCount);
- 
-            row.innerHTML = document.getElementById("groupmapmodel").innerHTML;
-        }
-</script> 
+
 
 
 

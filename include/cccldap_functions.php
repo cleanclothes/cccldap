@@ -56,8 +56,7 @@ function cccldap_authenticate($username,$password){
 		}
 		
 	$email_attribute=$cccldap['email_attribute'];
-	$ldapgroupfield=$cccldap['ldapgroupfield'];
-	$attributes = array("displayname",$ldapgroupfield,$email_attribute);
+	$attributes = array("displayname",$email_attribute);
 	$loginfield=$cccldap['loginfield'];
 	$filter = "(&(objectClass=person)(". $loginfield . "=" . $username . "))";
 	
@@ -120,50 +119,15 @@ function cccldap_authenticate($username,$password){
 			$displayname = '';
 		}
 
-		//$ldap_groupfield = $cccldap[$ldapgroupfield];
  
-		$department = '';
-		debug("LDAP - checking for group attribute - " . $ldapgroupfield);
+
 			
 		//$entry = ldap_first_entry($ds, $search);
 		//var_dump($entries);		
 
 		$usermemberof=array();
 
-		if (isset($entries[0][$ldapgroupfield]) && count($entries[0][$ldapgroupfield]) > 0)
-			{
-			debug("LDAP - found group attribute - checking against configured mappings");
-			$usermemberofgroups=$entries[0][$ldapgroupfield];
-			
-			$deptresult = sql_query('select ldapgroup, rsgroup from cccldap_groupmap order by priority asc');
-			// Go through each configured ldap->RS group mapping, adding each to the array of groups that user is a member of. Update $department with each match so we end up with the highest priority dept
-			foreach ($deptresult as $thedeptresult)
-				{
-				$deptname=$thedeptresult['ldapgroup'];
-                $deptmap=$thedeptresult['rsgroup'];
-                $knowndept[$deptname] = $deptmap;
-                if ((isset($deptmap) && !empty($deptmap)) && in_array($deptname,$usermemberofgroups))
-					{
-					$department=$deptname;
-					$usermemberof[]=$deptname;
-					}				
-				}
-			// Go through all mappings and add any unknown groups to the list of mappings so that it can be easily used (LDAP group names can be hard to remember)
-			foreach ($usermemberofgroups as $usermemberofgroup)
-				{
-				if(!isset($knowndept[$usermemberofgroup])) // This group is not in the current list
-					{
-					if (!is_numeric($usermemberofgroup))
-						{
-						// ignore numbers; this is a kludgey way to deal with the fact
-						// that some ldap servers seem to return a result count as the first value
-						$newdept = escape_check($usermemberofgroup);
-						$usermemberof[]=$newdept;
-						sql_query("replace into cccldap_groupmap (ldapgroup, rsgroup) values (\"$newdept\",NULL)");
-						} 
-					}
-				}
-			}
+
 		//Extract email info
 		if ((isset($entries[0][$email_attribute])) && count($entries[0][$email_attribute]) > 0)
 			{
@@ -181,7 +145,6 @@ function cccldap_authenticate($username,$password){
 		$return['username'] = $username;
 		$return['binduser'] = $binduserstring;
 		$return['displayname'] = $displayname;
-		$return['group'] = $department;
 		$return['email'] = $email;
 		$return['memberof'] = $usermemberof;
 		return $return;
