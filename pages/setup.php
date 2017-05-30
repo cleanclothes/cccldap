@@ -32,7 +32,6 @@ elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag
 	
 	
 	
-	$priority = $_REQUEST['priority'];
 
 
 
