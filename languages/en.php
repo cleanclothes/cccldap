@@ -15,7 +15,6 @@ $lang['ldapvalue'] = "LDAP Value";
 $lang['addrow'] = "Add Row";
 $lang['email_attribute'] = "Attribute to use for email address";
 $lang['cccldap_unknown'] = "unknown";
-$lang['cccldappriority']="Priority (higher number will take precedence)";
 $lang['cccldap_create_new_match_email'] = "Email-match: Before creating new users, check if LDAP email matches existing RS account email and adopt that account";
 $lang['cccldap_allow_duplicate_email'] ="Allow new accounts to be created if there are existing accounts with the same email address? (this is overridden if email-match is set above and one match is found)";
 $lang['cccldap_multiple_email_match_subject'] ="ResourceSpace - conflicting email login attempt";
