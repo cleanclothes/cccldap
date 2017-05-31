@@ -6,7 +6,6 @@ include_once "../../../include/general.php";
 $plugin_name="cccldap";
 if(!in_array($plugin_name, $plugins))
 	{plugin_activate_for_setup($plugin_name);}
-	
 $upload_status="";
 
 if (getval('upload','')!='')
@@ -28,9 +27,6 @@ elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag
 	$cccldap['allow_duplicate_email'] = getvalescaped('allow_duplicate_email','');
 	$cccldap['notification_email'] = getvalescaped('notification_email','');
 	$cccldap['ldaptype'] = getvalescaped('ldaptype','');
-	
-	
-	
 
 
 
@@ -39,7 +35,7 @@ elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag
 		{
 		set_plugin_config("cccldap",array("cccldap"=>$cccldap));
 		}
-		
+
 	if (getval("submit","")!="")
 		{
 		redirect("pages/team/team_plugins.php");
@@ -64,13 +60,11 @@ foreach (array('ldapserver','port','basedn','loginfield','usersuffix','emailsuff
 if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")=="")
 		{
 		?>
-		<div class="BasicsBox"> 
+		<div class="BasicsBox">
 		<?php
 		echo "<h1>" . $lang["cccldap_test"] . " " . $cccldap['ldapserver'] . ":" . $cccldap['port'] ."</h1>";
-		
 		debug("LDAP - Connecting to LDAP server: " . $cccldap['ldapserver'] . " on port " . $cccldap['port']);
 		$dstestconn=  @fsockopen($cccldap['ldapserver'], $cccldap['port'], $errno, $errstr, 5);
-		
 		if($dstestconn)
 			{
 			fclose($dstestconn);
@@ -79,19 +73,19 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 			<div class="Question">
 			<label for="ldapuser"><?php echo $lang["cccldap_username"] ?></label><input id='ldapuser' type="text" name='ldapuser'>
 			</div>
-			
 			<div class="Question">
 			<label for="ldappassword"><?php echo $lang["cccldap_password"] ?></label><input id='ldappassword' type="password" name='ldappassword'>
-			</div>		
+			</div>
+
+			<?php
+			}
+			?>
 
 
-		
-		<input type="submit" onClick="cccldap_test();return false;" name="testauth" value="<?php echo $lang["cccldap_test_auth"]; ?>" <?php if (!$dstestconn){echo "disabled='true'";} ?>>		
+		<input type="submit" onClick="cccldap_test();return false;" name="testauth" value="<?php echo $lang["cccldap_test_auth"]; ?>" <?php if (!$dstestconn){echo "disabled='true'";} ?>>
 		<input type="submit" onClick="ModalClose();return false;" name="cancel" value="<?php echo $lang["cancel"]; ?>">
-		
 		<br /><br />
 		<!--<textarea id="cccldaptestresults" class="Fixed" rows=15 cols=100 style="display: none; width: 100%; border: solid 1px;" ></textarea>-->
-		
 		<script>
 		function cccldap_test()
 			{
@@ -105,23 +99,19 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 				ldapserver: '<?php echo htmlspecialchars($cccldap['ldapserver']) ?>',
 				port: '<?php echo htmlspecialchars($cccldap['port']) ?>',
 				ldaptype: '<?php echo htmlspecialchars($cccldap['ldaptype']) ?>',
-				loginfield: '<?php echo htmlspecialchars($cccldap['loginfield']) ?>',				
-				basedn: '<?php echo htmlspecialchars($cccldap['basedn']) ?>',	
+				loginfield: '<?php echo htmlspecialchars($cccldap['loginfield']) ?>',
+				basedn: '<?php echo htmlspecialchars($cccldap['basedn']) ?>',
 				email_attribute: '<?php echo htmlspecialchars($cccldap['email_attribute']) ?>',
 				ldapuser: user,
 				ldappassword: password
-			
-				
 			};
-			
 			jQuery.ajax({
 				  type: 'POST',
 				  url: testurl,
 				  data: post_data,
-				  dataType: 'json', 
+				  dataType: 'json',
 				  success: function(response){
 						if(response.complete === true){
-						
 						jQuery('#testbindresult').html(response.bindsuccess);
 						if(response.success){
 							jQuery('#testgetuserresult').html('<?php echo $lang["status-ok"]; ?> (' + response.binduser + ')');
@@ -129,12 +119,9 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 						else {
 							jQuery('#testgetuserresult').html('<?php echo $lang["status-fail"]; ?>');
 						}
-							
-												
 						returnmessage = response.message;
-						if(response.success) {						
+						if(response.success) {
 							returnmessage += "<tr class='resultrow'><td><?php echo $lang["email"]; ?>: </td><td>" + response.email + "</td></tr>";
-	
 							returnmessage += "</td></tr>";
 						}
 						jQuery('#blankrow').before(returnmessage);
@@ -150,40 +137,35 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 					  jQuery('#cccldaptestresults').html(textStatus + ":&nbsp;" + xhr.status    + "&nbsp;" + error  );
 				}
 			});
-			
 			}
-		
 		</script>
 		<?php
-		
 		echo "<table class='InfoTable' style='width: 100%' ><tbody>";
 		echo "<tr><td width='40%'><h2>" .  $lang["cccldap_test_title"] . "</h2></td><td width='60%'><h2>" . $lang["cccldap_result"] . "</h2></td></tr>";
 		echo "<tr><td>" . $lang["cccldap_connection"] . " " . $cccldap['ldapserver'] . ":" . $cccldap['port'] . "</td><td id='testconnectionresult'>" . (($dstestconn)?$lang["status-ok"]:$lang["status-fail"]) . "</td></tr>";
 		echo "<tr><td>" . $lang["cccldap_bind"] . "</td><td id='testbindresult'></td></tr>";
 		echo "<tr><td>" . $lang["cccldap_retrieve_user"] . "</td><td id='testgetuserresult'></td></tr>";
-		echo "<tr id='blankrow'><td colspan='2' ></td></tr>";				
+		echo "<tr id='blankrow'><td colspan='2' ></td></tr>";
 		echo "</tbody></table>";
 		?>
 		</div>
 		<?php
 		exit();
-		}	
-		
+		}
+
 
 
 ?>
-<div class="BasicsBox"> 
+<div class="BasicsBox">
   <h2>&nbsp;</h2>
- 
-<?php 
+
+<?php
 if (!function_exists('ldap_connect'))
 	{
 	echo "<div class=\"PageInformal\">" . $lang["cccldap_externsion_required"] . "</div>";
 	}
-	
 ?>
  <h1>cccldap Configuration</h1>
-  
  <form id="form1" name="form1" enctype= "multipart/form-data" method="post" action="<?php echo get_plugin_path("cccldap",true) . "/pages/setup.php";?>">
 
 <?php echo config_single_select("ldaptype", $lang['cccldap_ldaptype'], $cccldap['ldaptype'], array(1=>"Active Directory",2=>"Oracle Directory")); ?>
