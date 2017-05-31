@@ -1,6 +1,5 @@
 <?php
 $cccldap['emailsuffix'] = 'cleanclothes.org';
-$cccldap['ldaptype'] = 2;
 $cccldap['ldapserver'] = 'ldap.ccc.local';
 $cccldap['port'] = '389';
 $cccldap['basedn']= 'ou=insite,dc=cleanclothes,dc=org';

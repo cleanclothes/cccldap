@@ -2,7 +2,6 @@
 # English
 # Language File for the cccldap Plugin
 # -------
-$lang['cccldap_ldaptype'] = "Directory Provider";
 $lang['ldapserver'] = "LDAP Server";
 $lang['emailsuffix'] = "Email suffix - used if no email attribute data found";
 $lang['port'] = "Port";

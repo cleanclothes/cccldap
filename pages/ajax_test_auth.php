@@ -8,7 +8,6 @@ $cccldap['ldapserver'] = getvalescaped('ldapserver','');
 $cccldap['ldapuser'] = getvalescaped('ldapuser','');
 $cccldap['ldappassword'] = getvalescaped('ldappassword','');
 $cccldap['port'] = getvalescaped('port','');
-$cccldap['ldaptype'] = getvalescaped('ldaptype',1);
 $cccldap['basedn']= getvalescaped('basedn','');
 $cccldap['loginfield'] = getvalescaped('loginfield','');
 $cccldap['email_attribute'] = getvalescaped('email_attribute','');
@@ -23,9 +22,9 @@ $cccldap['email_attribute'] = getvalescaped('email_attribute','');
 		$login = @ldap_bind( $ds, $binduserstring, $cccldap['ldappassword'] );
 		if (!$login){continue;}else{$bindsuccess=true;break;}
 		}
-		
-	
-$response['bindsuccess']=$bindsuccess?$lang["status-ok"]:$lang["status-fail"];	
+
+
+$response['bindsuccess']=$bindsuccess?$lang["status-ok"]:$lang["status-fail"];
 
 $userdetails=cccldap_authenticate($cccldap['ldapuser'],$cccldap['ldappassword']);
 

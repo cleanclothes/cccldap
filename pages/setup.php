@@ -26,8 +26,6 @@ elseif (getval("submit","")!="" || getval("save","")!="" || getval("testConnflag
 	$cccldap['create_new_match_email'] = getvalescaped('create_new_match_email','');
 	$cccldap['allow_duplicate_email'] = getvalescaped('allow_duplicate_email','');
 	$cccldap['notification_email'] = getvalescaped('notification_email','');
-	$cccldap['ldaptype'] = getvalescaped('ldaptype','');
-
 
 
 	//$config['cccldap'] = $cccldap;
@@ -50,7 +48,7 @@ include "../../../include/header.php";
 
 // if some of the values aren't set yet, fudge them so we don't get an undefined error
 // this may be important for updates to the plugin that introduce new variables
-foreach (array('ldapserver','port','basedn','loginfield','usersuffix','emailsuffix','email_attribute','create_new_match_email','allow_duplicate_email','notification_email','ldaptype') as $thefield){
+foreach (array('ldapserver','port','basedn','loginfield','usersuffix','emailsuffix','email_attribute','create_new_match_email','allow_duplicate_email','notification_email') as $thefield){
 	if (!isset($cccldap[$thefield])){
 		$cccldap[$thefield] = '';
 	}
@@ -98,7 +96,6 @@ if(getval("testConnflag","")!="" && getval("submit","")=="" && getval("save","")
 				ajax: true,
 				ldapserver: '<?php echo htmlspecialchars($cccldap['ldapserver']) ?>',
 				port: '<?php echo htmlspecialchars($cccldap['port']) ?>',
-				ldaptype: '<?php echo htmlspecialchars($cccldap['ldaptype']) ?>',
 				loginfield: '<?php echo htmlspecialchars($cccldap['loginfield']) ?>',
 				basedn: '<?php echo htmlspecialchars($cccldap['basedn']) ?>',
 				email_attribute: '<?php echo htmlspecialchars($cccldap['email_attribute']) ?>',
@@ -168,7 +165,6 @@ if (!function_exists('ldap_connect'))
  <h1>cccldap Configuration</h1>
  <form id="form1" name="form1" enctype= "multipart/form-data" method="post" action="<?php echo get_plugin_path("cccldap",true) . "/pages/setup.php";?>">
 
-<?php echo config_single_select("ldaptype", $lang['cccldap_ldaptype'], $cccldap['ldaptype'], array(1=>"Active Directory",2=>"Oracle Directory")); ?>
 <?php echo config_text_field("ldapserver",$lang['ldapserver'],$cccldap['ldapserver'],60);?>
 <?php echo config_text_field("emailsuffix",$lang['emailsuffix'],$cccldap['emailsuffix'],60);?>
 <?php echo config_text_field("email_attribute",$lang['email_attribute'],$cccldap['email_attribute'],60);?>

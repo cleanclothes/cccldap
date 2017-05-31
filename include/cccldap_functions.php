@@ -17,34 +17,30 @@
 
 function cccldap_authenticate($username,$password){
 	if (!function_exists('ldap_connect')){return false;}
-	// given a username and password, return false if not authenticated, or 
+	// given a username and password, return false if not authenticated, or
 	// associative array of displayname, username, e-mail if valid
 	global $cccldap;
 	debug("LDAP - Connecting to LDAP server: " . $cccldap['ldapserver'] . " on port " . $cccldap['port']);
 	$ds = ldap_connect( $cccldap['ldapserver'],$cccldap['port'] );
-	
+
 	if($ds){
 		debug("LDAP - Connected to LDAP server ");
 		}
-		
+
 	ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
-	
-	if(!isset($cccldap['ldaptype']) || $cccldap['ldaptype']==1)  // AD - need to set this
-		{
-		ldap_set_option($ds, LDAP_OPT_REFERRALS, 0);
-		}
+
 
 	//must always check that password length > 0
 	if (!(strlen($password) > 0 && strlen($username) > 0)){
 		return false;
 		}
-	
-	
+
+
 	$email_attribute=$cccldap['email_attribute'];
 	$attributes = array("displayname",$email_attribute);
 	$loginfield=$cccldap['loginfield'];
 	$filter = "(&(objectClass=person)(". $loginfield . "=" . $username . "))";
-	
+
 	$searchdns=explode(";",$cccldap['basedn']);
 	$dn=array();
 	$ldapconnections=array();
@@ -56,31 +52,31 @@ function cccldap_authenticate($username,$password){
 	for($x=0;$x<count($dn);$x++)
 		{
 		$ldapconnections[$x] = ldap_connect( $cccldap['ldapserver'],$cccldap['port'] );
-		
+
 
 			$binduserstring = $cccldap['loginfield'] . "=" . $username . "," . $cccldap['basedn'];
 
 		debug("LDAP - binding as " . $binduserstring);
 		if(!(@ldap_bind($ldapconnections[$x], $binduserstring, $password ))){return false;}
-		
+
 		debug("LDAP - searching " . $dn[$x] . " as " . $binduserstring);
-		
+
     }
 	debug("LDAP - performing search: filter=" . $filter);
 	debug("LDAP - retrieving attributes: " . implode(",",$attributes));
 	$result = ldap_search($ldapconnections, $dn, $filter, $attributes);
-	
+
 	//exit(print_r($result));
-	foreach ($result as $value) 
-		{ 
+	foreach ($result as $value)
+		{
 		debug("LDAP - search returned value " . $value);
 		debug("LDAP - found " . ldap_count_entries($ds,$value) . " entries");
     if(ldap_count_entries($ds,$value)>0)
-			{ 
-			$search = $value; 
-			break; 
+			{
+			$search = $value;
+			break;
 			}
-		} 
+		}
 	if (isset($search))
 		{$entries = ldap_get_entries($ds, $search);}
 	else
@@ -88,9 +84,9 @@ function cccldap_authenticate($username,$password){
 		debug("LDAP - search returned no values");
 		return false;
 		}
-		
-		
-	
+
+
+
 	if($entries["count"] > 0){
 
 		if (isset($entries[0]['displayname']) && count($entries[0]['displayname']) > 0){
@@ -99,11 +95,11 @@ function cccldap_authenticate($username,$password){
 			$displayname = '';
 		}
 
- 
 
-			
+
+
 		//$entry = ldap_first_entry($ds, $search);
-		//var_dump($entries);		
+		//var_dump($entries);
 
 
 
@@ -116,10 +112,10 @@ function cccldap_authenticate($username,$password){
 			{
 			$email = $username . '@' . $cccldap['emailsuffix'];;
 			}
-			
 
-				
-		
+
+
+
 
 		$return['username'] = $username;
 		$return['binduser'] = $binduserstring;
